@@ -4,7 +4,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace BotVitrasa.Handlers;
 
-public class StartCommandHandler : ICommandHandler
+public class InfoCommandHandler : ICommandHandler
 {
     public async Task Handle(Message message, ITelegramBotClient client)
     {
@@ -13,21 +13,16 @@ public class StartCommandHandler : ICommandHandler
             replyToMessageId: message.MessageId,
             text:
 """
-Hola 👋
+Infobus Vigo es un bot de Telegram que te permite consultar el tiempo de espera de los autobuses de Vitrasa en Vigo.
 
-Soy un bot no oficial para consultar rápidamente información de las paradas de Vitrasa.
+Usa /help para ver los comandos disponibles.
 
-<b>Comandos disponibles:</b>
+Código fuente: https://github.com/arielcostas/infobus-bot
 
-/help - Muestra la ayuda
-
-/start - Inicia el bot
-/help - Muestra esta ayuda
-
-/buscar &lt;termino&gt; - Busca una parada
-/parada &lt;id&gt; - Muestra información de una parada
+Desarrollado por Ariel Costas <https://costas.dev>
 """,
             parseMode: ParseMode.Html
         );
+
     }
 }

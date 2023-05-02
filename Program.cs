@@ -49,6 +49,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     {
         "start" => new StartCommandHandler(),
         "help" => new HelpCommandHandler(),
+        "info" => new InfoCommandHandler(),
         "parada" => new ParadaCommandHandler(),
         "buscar" => bch,
         _ => new DefaultCommandHandler()

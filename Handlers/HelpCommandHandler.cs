@@ -13,10 +13,6 @@ public class HelpCommandHandler : ICommandHandler
             replyToMessageId: message.MessageId,
             text:
 """
-Hola 👋
-
-Soy un bot no oficial para consultar rápidamente información de las paradas de Vitrasa.
-
 <b>Comandos disponibles:</b>
 
 /start - Inicia el bot
@@ -24,6 +20,8 @@ Soy un bot no oficial para consultar rápidamente información de las paradas de
 
 /buscar &lt;termino&gt; - Busca una parada
 /parada &lt;id&gt; - Muestra información de una parada
+
+/info - Muestra información del bot
 """,
             parseMode: ParseMode.Html
         );
