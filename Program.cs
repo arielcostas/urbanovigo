@@ -1,5 +1,4 @@
-﻿using BotVitrasa;
-using BotVitrasa.Handlers;
+﻿using BotVitrasa.Handlers;
 using Microsoft.Extensions.Configuration;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -19,6 +18,8 @@ ReceiverOptions receiverOptions = new()
 {
     AllowedUpdates = Array.Empty<UpdateType>()
 };
+
+BuscarCommandHandler bch = new();
 
 client.StartReceiving(
     updateHandler: HandleUpdateAsync,
@@ -46,19 +47,14 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
     ICommandHandler handler = args[0][1..] switch
     {
+        "start" => new StartCommandHandler(),
+        "help" => new HelpCommandHandler(),
         "parada" => new ParadaCommandHandler(),
+        "buscar" => bch,
         _ => new DefaultCommandHandler()
     };
 
-    var reply = handler.Handle(args[1..]);
-
-    await botClient.SendTextMessageAsync(
-        chatId: message.Chat.Id,
-        replyToMessageId: message.MessageId,
-        text: await reply,
-        parseMode: ParseMode.Html,
-        cancellationToken: cancellationToken
-    );
+    await handler.Handle(message, botClient);
 }
 
 Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

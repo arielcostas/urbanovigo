@@ -4,16 +4,21 @@ using Telegram.Bot.Types.Enums;
 
 namespace BotVitrasa.Handlers;
 
-public class DefaultCommandHandler : ICommandHandler
+public class StartCommandHandler : ICommandHandler
 {
     public async Task Handle(Message message, ITelegramBotClient client)
     {
         await client.SendTextMessageAsync(
             chatId: message.Chat.Id,
             replyToMessageId: message.MessageId,
-            text: "Comando no reconocido.",
+            text:
+"""
+<b>Comandos disponibles:</b>
+/start - Inicia el bot
+/buscar &lt;termino&gt; - Busca una parada
+/parada &lt;id&gt; - Muestra información de una parada
+""",
             parseMode: ParseMode.Html
         );
-        
     }
 }

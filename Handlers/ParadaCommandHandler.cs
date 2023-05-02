@@ -1,5 +1,8 @@
 ﻿using System.Text;
 using HtmlAgilityPack;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace BotVitrasa.Handlers;
 
@@ -10,37 +13,61 @@ public sealed class ParadaCommandHandler : ICommandHandler
         PooledConnectionLifetime = TimeSpan.FromMinutes(15)
     };
 
-    public async Task<string> Handle(string[] args)
+    public async Task Handle(Message message, ITelegramBotClient client)
     {
+        var args = message.Text!.Split(' ')[1..];
+
         if (args.Length != 1)
-            return "Debes especificar solo una parada";
+            await client.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                replyToMessageId: message.MessageId,
+                text: "Debes especificar solo una parada",
+                parseMode: ParseMode.Html
+            );
 
         if (!int.TryParse(args[0], out _))
         {
-            return "El id de la parada debe ser un número válido";
+            await client.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                replyToMessageId: message.MessageId,
+                text: "El id de la parada debe ser un número válido",
+                parseMode: ParseMode.Html
+            );
+            return;
         }
-        
+
         var paradaSolicitada = await GetParada(args[0]);
 
         if (paradaSolicitada is null)
         {
-            return "No se ha encontrado la parada o ningún paso próximo";
+            await client.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                replyToMessageId: message.MessageId,
+                text: "No se ha encontrado la parada o ningún paso próximo",
+                parseMode: ParseMode.Html
+            );
+            return;
         }
 
         var sb = new StringBuilder();
-        
+
         sb.AppendLine($"<b>{paradaSolicitada.Nombre}</b> ({paradaSolicitada.Id})");
-        
+
         sb.AppendLine($"<pre>Min | Liña => Destino</pre>");
         foreach (var paso in paradaSolicitada.Pasos)
         {
             var minutosPadded = paso.Minutos.PadLeft(3, ' ');
             var lineaPadded = paso.Linea.PadLeft(4, ' ');
-            
+
             sb.AppendLine($"<pre>{minutosPadded} | {lineaPadded} => {paso.Destino}</pre>");
         }
-        
-        return sb.ToString();
+
+        await client.SendTextMessageAsync(
+            chatId: message.Chat.Id,
+            replyToMessageId: message.MessageId,
+            text: sb.ToString(),
+            parseMode: ParseMode.Html
+        );
     }
 
     private static async Task<Parada?> GetParada(string idParada)
