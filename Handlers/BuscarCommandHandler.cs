@@ -47,6 +47,7 @@ public class BuscarCommandHandler : ICommandHandler
                 text: "No se ha encontrado ninguna parada con ese nombre.",
                 parseMode: ParseMode.Html
             );
+            return;
         }
 
         var r = resultados.ToArray();
