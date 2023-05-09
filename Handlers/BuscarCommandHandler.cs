@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FuzzySharp;
@@ -13,6 +14,7 @@ public class BuscarCommandHandler : ICommandHandler
     private readonly HttpClient _httpClient = new();
     private readonly List<ParadaBus> _paradas;
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ParadaBus))]
     public BuscarCommandHandler()
     {
         var rt = _httpClient.GetAsync("https://datos.vigo.org/data/transporte/paradas.json");
