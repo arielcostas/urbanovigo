@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace BotVitrasa.Handlers;
 
@@ -15,17 +16,24 @@ public sealed class ParadaCommandHandler : ICommandHandler
 
     public async Task Handle(Message message, ITelegramBotClient client)
     {
-        var args = message.Text!.Split(' ')[1..];
+        var args = message.Text!.Split(' ');
 
-        if (args.Length != 1)
+        if (args.Length > 2)
             await client.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 replyToMessageId: message.MessageId,
                 text: "Debes especificar solo una parada",
                 parseMode: ParseMode.Html
             );
+        
+        string id = args.Length switch
+        {
+            1 => args[0],
+            2 => args[1],
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
-        if (!int.TryParse(args[0], out _))
+        if (!int.TryParse(id, out _))
         {
             await client.SendTextMessageAsync(
                 chatId: message.Chat.Id,
@@ -36,7 +44,7 @@ public sealed class ParadaCommandHandler : ICommandHandler
             return;
         }
 
-        var paradaSolicitada = await GetParada(args[0]);
+        var paradaSolicitada = await GetParada(id);
 
         if (paradaSolicitada is null)
         {
@@ -66,7 +74,10 @@ public sealed class ParadaCommandHandler : ICommandHandler
             chatId: message.Chat.Id,
             replyToMessageId: message.MessageId,
             text: sb.ToString(),
-            parseMode: ParseMode.Html
+            parseMode: ParseMode.Html,
+            replyMarkup: new ReplyKeyboardMarkup(
+                new KeyboardButton("/parada " + paradaSolicitada.Id)
+            )
         );
     }
 
@@ -106,7 +117,6 @@ public sealed class ParadaCommandHandler : ICommandHandler
 
         if (rows is null)
         {
-            Console.WriteLine("No se ha encontrado la tabla de próximos pasos");
             return new List<Paso>();
         }
 

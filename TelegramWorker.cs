@@ -12,7 +12,7 @@ public class TelegramWorker : BackgroundService
 {
     private readonly string _token;
     private readonly BuscarCommandHandler _bch = new();
-    
+
     public TelegramWorker(string token)
     {
         _token = token;
@@ -25,20 +25,21 @@ public class TelegramWorker : BackgroundService
         {
             AllowedUpdates = Array.Empty<UpdateType>()
         };
-        
+
         client.StartReceiving(
             updateHandler: HandleUpdateAsync,
             pollingErrorHandler: HandlePollingErrorAsync,
             receiverOptions: receiverOptions,
             cancellationToken: cancellationToken
         );
-        
+
         var me = await client.GetMeAsync(cancellationToken: cancellationToken);
 
         Console.WriteLine($"Listening for @{me.Username}");
     }
 
-    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+        CancellationToken cancellationToken)
     {
         if (update.Message is not { } message)
             return;
@@ -48,15 +49,27 @@ public class TelegramWorker : BackgroundService
 
         var args = messageText.Split(' ');
 
-        ICommandHandler handler = args[0][1..] switch
+        ICommandHandler? handler = args[0][1..] switch
         {
             "start" => new StartCommandHandler(),
             "help" => new HelpCommandHandler(),
             "info" => new InfoCommandHandler(),
             "parada" => new ParadaCommandHandler(),
             "buscar" => _bch,
-            _ => new DefaultCommandHandler()
+            _ => null
         };
+
+        if (handler is null)
+        {
+            if (int.TryParse(messageText, out _))
+            {
+                handler = new ParadaCommandHandler();
+            }
+            else
+            {
+                handler = new DefaultCommandHandler();
+            }
+        }
 
         await handler.Handle(message, botClient);
     }

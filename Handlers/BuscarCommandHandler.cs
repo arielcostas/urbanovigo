@@ -6,6 +6,7 @@ using FuzzySharp;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace BotVitrasa.Handlers;
 
@@ -67,7 +68,15 @@ public class BuscarCommandHandler : ICommandHandler
             chatId: message.Chat.Id,
             replyToMessageId: message.MessageId,
             text: sb.ToString(),
-            parseMode: ParseMode.Html
+            parseMode: ParseMode.Html,
+            replyMarkup: new ReplyKeyboardMarkup(
+                r.Select(resultado =>
+                {
+                    var parada = _paradas.First(p => p.Nombre == resultado.Value);
+                    return new KeyboardButton($"/parada {parada.Id}");
+                })
+            )
+            
         );
 
         var p0 = _paradas.First(p => p.Nombre == r[0].Value);
