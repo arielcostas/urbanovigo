@@ -1,5 +1,7 @@
 ﻿using BotVitrasa.Handlers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -12,10 +14,12 @@ public class TelegramWorker : BackgroundService
 {
     private readonly string _token;
     private readonly BuscarCommandHandler _bch = new();
+    private readonly ILogger<TelegramWorker> _logger;
 
-    public TelegramWorker(string token)
+    public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger)
     {
-        _token = token;
+        _token = configuration["Token"]!;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -23,7 +27,11 @@ public class TelegramWorker : BackgroundService
         TelegramBotClient client = new(_token);
         ReceiverOptions receiverOptions = new()
         {
-            AllowedUpdates = Array.Empty<UpdateType>()
+            AllowedUpdates = new []
+            {
+                UpdateType.Message
+            },
+            ThrowPendingUpdates = true
         };
 
         client.StartReceiving(
@@ -32,7 +40,7 @@ public class TelegramWorker : BackgroundService
             receiverOptions: receiverOptions,
             cancellationToken: cancellationToken
         );
-
+        
         var me = await client.GetMeAsync(cancellationToken: cancellationToken);
 
         Console.WriteLine($"Listening for @{me.Username}");
@@ -47,6 +55,8 @@ public class TelegramWorker : BackgroundService
         if (message.Text is not { } messageText)
             return;
 
+        _logger.LogInformation($"{message.Chat.Username}: {messageText}");
+        
         var args = messageText.Split(' ');
 
         ICommandHandler? handler = args[0][1..] switch
@@ -80,7 +90,7 @@ public class TelegramWorker : BackgroundService
         var errorMessage = exception switch
         {
             ApiRequestException apiRequestException
-                => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                => $"Telegram API Error: [{apiRequestException.ErrorCode}] {apiRequestException.Message}",
             _ => exception.ToString()
         };
 

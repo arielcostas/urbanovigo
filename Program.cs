@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 IHostBuilder builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
-        services.AddHostedService<TelegramWorker>(_ => new TelegramWorker(hostContext.Configuration["Token"]!));
+        services.AddHostedService<TelegramWorker>();
     });
 
 builder.Build().Run();
