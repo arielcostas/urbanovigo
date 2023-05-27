@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BotVitrasa.Data;
 using HtmlAgilityPack;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -149,6 +150,3 @@ public sealed class ParadaCommandHandler : ICommandHandler
     }
 }
 
-record Parada(string Id, string Nombre, Paso[] Pasos);
-
-record Paso(string Linea, string Destino, string Minutos);

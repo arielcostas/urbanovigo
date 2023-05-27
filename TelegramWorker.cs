@@ -23,7 +23,10 @@ public class TelegramWorker : BackgroundService
         TelegramBotClient client = new(_token);
         ReceiverOptions receiverOptions = new()
         {
-            AllowedUpdates = Array.Empty<UpdateType>()
+            AllowedUpdates = new []
+            {
+                UpdateType.Message
+            }
         };
 
         client.StartReceiving(
@@ -44,6 +47,12 @@ public class TelegramWorker : BackgroundService
         if (update.Message is not { } message)
             return;
 
+        if (message.Location is not null)
+        {
+            await _bch.Handle(message, botClient);
+            return;
+        }
+        
         if (message.Text is not { } messageText)
             return;
 
@@ -51,9 +60,9 @@ public class TelegramWorker : BackgroundService
 
         ICommandHandler? handler = args[0][1..] switch
         {
-            "start" => new StartCommandHandler(),
-            "help" => new HelpCommandHandler(),
-            "info" => new InfoCommandHandler(),
+            "start" => new InformationCommandHandler(),
+            "help" => new InformationCommandHandler(),
+            "info" => new InformationCommandHandler(),
             "parada" => new ParadaCommandHandler(),
             "buscar" => _bch,
             _ => null

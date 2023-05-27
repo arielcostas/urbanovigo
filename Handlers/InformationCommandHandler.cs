@@ -4,7 +4,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace BotVitrasa.Handlers;
 
-public class StartCommandHandler : ICommandHandler
+public class InformationCommandHandler : ICommandHandler
 {
     public async Task Handle(Message message, ITelegramBotClient client)
     {
@@ -19,13 +19,17 @@ Soy un bot no oficial para consultar rápidamente información de las paradas de
 
 <b>Comandos disponibles:</b>
 
-/help - Muestra la ayuda
-
 /start - Inicia el bot
 /help - Muestra esta ayuda
 
 /buscar &lt;termino&gt; - Busca una parada
 /parada &lt;id&gt; - Muestra información de una parada
+
+<b>Más información:</b>
+
+Código fuente: https://github.com/arielcostas/infobus-bot
+
+Desarrollado por Ariel Costas <https://costas.dev>
 """,
             parseMode: ParseMode.Html
         );
