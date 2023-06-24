@@ -1,4 +1,4 @@
-﻿namespace BotVitrasa.Utils;
+﻿namespace BotVitrasa.Data;
 
 public class Cache<T> where T : class
 {

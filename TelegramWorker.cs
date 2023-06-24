@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -27,10 +26,9 @@ public class TelegramWorker : BackgroundService
         TelegramBotClient client = new(_token);
         ReceiverOptions receiverOptions = new()
         {
-            AllowedUpdates = new []
+            AllowedUpdates = new[]
             {
                 UpdateType.Message
-            }
             },
             ThrowPendingUpdates = true
         };
@@ -41,7 +39,7 @@ public class TelegramWorker : BackgroundService
             receiverOptions: receiverOptions,
             cancellationToken: cancellationToken
         );
-        
+
         var me = await client.GetMeAsync(cancellationToken: cancellationToken);
 
         Console.WriteLine($"Listening for @{me.Username}");
@@ -58,12 +56,16 @@ public class TelegramWorker : BackgroundService
             await _bch.Handle(message, botClient);
             return;
         }
-        
+
         if (message.Text is not { } messageText)
             return;
 
-        _logger.LogInformation($"{message.Chat.Username}: {messageText}");
-        
+        _logger.LogInformation(
+            Events.MessageReceived,
+            "{User}: {MessageText}",
+            message.From?.Username, message.Text
+        );
+
         var args = messageText.Split(' ');
 
         ICommandHandler? handler = args[0][1..] switch
