@@ -1,4 +1,5 @@
-﻿using BotVitrasa.Handlers;
+﻿using System.Net;
+using BotVitrasa.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,13 @@ public class TelegramWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        TelegramBotClient client = new(_token);
+        var handler = new HttpClientHandler();
+        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true; // FIXME: This is insecure
+
+        var httpClient = new HttpClient(handler);
+        
+        TelegramBotClient client = new(_token, httpClient);
         ReceiverOptions receiverOptions = new()
         {
             AllowedUpdates = new[]

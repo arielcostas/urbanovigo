@@ -1,0 +1,33 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infobus-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: infobus-bot
+  template:
+    metadata:
+      labels:
+        app: infobus-bot
+    spec:
+      containers:
+        - name: bot
+          image: ghcr.io/arielcostas/infobus-bot:main
+          env:
+            - name: Token
+              valueFrom:
+                secretKeyRef:
+                  name: infobus-bot-secret
+                  key: Token
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: infobus-bot-secret
+type: Opaque
+data:
+  Token: <base64-encoded-token>
