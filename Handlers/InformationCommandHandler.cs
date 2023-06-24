@@ -29,7 +29,7 @@ Soy un bot no oficial para consultar rápidamente información de las paradas de
 
 Código fuente: https://github.com/arielcostas/infobus-bot
 
-Desarrollado por Ariel Costas <https://costas.dev>
+Desarrollado por Ariel Costas -- https://costas.dev
 """,
             parseMode: ParseMode.Html
         );

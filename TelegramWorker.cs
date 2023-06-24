@@ -1,5 +1,7 @@
 ﻿using BotVitrasa.Handlers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -12,10 +14,12 @@ public class TelegramWorker : BackgroundService
 {
     private readonly string _token;
     private readonly BuscarCommandHandler _bch = new();
+    private readonly ILogger<TelegramWorker> _logger;
 
-    public TelegramWorker(string token)
+    public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger)
     {
-        _token = token;
+        _token = configuration["Token"] ?? string.Empty;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -83,17 +87,11 @@ public class TelegramWorker : BackgroundService
         await handler.Handle(message, botClient);
     }
 
-    private static Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
+    private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
-        var errorMessage = exception switch
-        {
-            ApiRequestException apiRequestException
-                => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
-            _ => exception.ToString()
-        };
+        _logger.LogError(exception, "API error");
 
-        Console.WriteLine(errorMessage);
         return Task.CompletedTask;
     }
 }
