@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: bot
-          image: ghcr.io/arielcostas/infobus-bot:main
+          image: ghcr.io/arielcostas/infobus-bot:latest
+          imagePullPolicy: Always
           env:
             - name: Token
               valueFrom:

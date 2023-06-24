@@ -24,13 +24,7 @@ public class TelegramWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        var handler = new HttpClientHandler();
-        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-        handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true; // FIXME: This is insecure
-
-        var httpClient = new HttpClient(handler);
-        
-        TelegramBotClient client = new(_token, httpClient);
+        TelegramBotClient client = new(_token);
         ReceiverOptions receiverOptions = new()
         {
             AllowedUpdates = new[]
