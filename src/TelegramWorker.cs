@@ -20,6 +20,8 @@ public class TelegramWorker : BackgroundService
     {
         _token = configuration["Token"] ?? string.Empty;
         _logger = logger;
+
+        Console.WriteLine(_token);
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
