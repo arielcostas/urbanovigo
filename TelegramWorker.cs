@@ -31,6 +31,8 @@ public class TelegramWorker : BackgroundService
             {
                 UpdateType.Message
             }
+            },
+            ThrowPendingUpdates = true
         };
 
         client.StartReceiving(
@@ -39,7 +41,7 @@ public class TelegramWorker : BackgroundService
             receiverOptions: receiverOptions,
             cancellationToken: cancellationToken
         );
-
+        
         var me = await client.GetMeAsync(cancellationToken: cancellationToken);
 
         Console.WriteLine($"Listening for @{me.Username}");
@@ -60,6 +62,8 @@ public class TelegramWorker : BackgroundService
         if (message.Text is not { } messageText)
             return;
 
+        _logger.LogInformation($"{message.Chat.Username}: {messageText}");
+        
         var args = messageText.Split(' ');
 
         ICommandHandler? handler = args[0][1..] switch

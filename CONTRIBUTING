@@ -1,0 +1,11 @@
+# Contribuyendo a Infobus-Bot
+
+Gracias por tu interés en contribuir mediante código o documentación a Infobus-Bot. Para contribuir a Infobus-Bot, debes seguir unos pocos pasos:
+
+1. Hacer "fork" en GitHub al proyecto.
+2. Hacer los cambios que desees contribuir.
+3. Crear uno o varios commits. **Importante**: Utiliza mensajes concisos y descriptivos, y añade `Signed-Off-By` utilizando `git commit -s` o la opción que dé el programa que estés utilizando.
+4. Publicar esos cambios a tu "fork", y abrir una Pull Request a `arielcostas/infobus-bot` para la rama `main`.
+5. Esperar aprobación, o solicitud de cambios.
+
+Añadir un `Signed-Off-By` implica aceptar el [Developer Certificate of Origin (DCO)](https://developercertificate.org/), publicado por la Linux Foundation, y es necesario para garantizar que no haya problemas legales derivados de las contribuciones de terceros.
