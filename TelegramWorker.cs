@@ -18,7 +18,7 @@ public class TelegramWorker : BackgroundService
 
     public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger)
     {
-        _token = configuration["Token"]!;
+        _token = configuration["Token"] ?? string.Empty;
         _logger = logger;
     }
 
@@ -52,6 +52,12 @@ public class TelegramWorker : BackgroundService
         if (update.Message is not { } message)
             return;
 
+        if (message.Location is not null)
+        {
+            await _bch.Handle(message, botClient);
+            return;
+        }
+        
         if (message.Text is not { } messageText)
             return;
 
@@ -61,9 +67,9 @@ public class TelegramWorker : BackgroundService
 
         ICommandHandler? handler = args[0][1..] switch
         {
-            "start" => new StartCommandHandler(),
-            "help" => new HelpCommandHandler(),
-            "info" => new InfoCommandHandler(),
+            "start" => new InformationCommandHandler(),
+            "help" => new InformationCommandHandler(),
+            "info" => new InformationCommandHandler(),
             "parada" => new ParadaCommandHandler(),
             "buscar" => _bch,
             _ => null
@@ -84,17 +90,11 @@ public class TelegramWorker : BackgroundService
         await handler.Handle(message, botClient);
     }
 
-    private static Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
+    private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
-        var errorMessage = exception switch
-        {
-            ApiRequestException apiRequestException
-                => $"Telegram API Error: [{apiRequestException.ErrorCode}] {apiRequestException.Message}",
-            _ => exception.ToString()
-        };
-
-        Console.WriteLine(errorMessage);
+        _logger.LogError(exception, "API error");
+        
         return Task.CompletedTask;
     }
 }

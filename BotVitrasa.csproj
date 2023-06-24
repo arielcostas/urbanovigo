@@ -5,8 +5,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PublishSingleFile>true</PublishSingleFile>
-        <UserSecretsId>2448f941-3ec2-461f-9139-0eb2948dec6b</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
     
     <ItemGroup>

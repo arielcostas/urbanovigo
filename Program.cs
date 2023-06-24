@@ -2,14 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-IHostBuilder builder = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((hostContext, services) =>
-    {
-        services.AddHostedService<TelegramWorker>();
-    });
+var builder = Host.CreateApplicationBuilder(args);
 
-builder.Build().Run();
+builder.Services.AddHostedService<TelegramWorker>();
 
+var app = builder.Build();
 
-
-
+app.Run();
