@@ -15,4 +15,5 @@ RUN dotnet publish "BotVitrasa.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV Token ""
 ENTRYPOINT ["dotnet", "BotVitrasa.dll"]

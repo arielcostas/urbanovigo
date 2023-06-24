@@ -8,6 +8,8 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration
     .AddEnvironmentVariables();
 
+Console.WriteLine($"""Read token from environment: ${Environment.GetEnvironmentVariable("Token")}""");
+
 builder.Services.AddSingleton(() => builder.Configuration);
 builder.Services.AddHostedService<TelegramWorker>();
 
