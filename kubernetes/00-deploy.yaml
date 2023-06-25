@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: bot
-          image: ghcr.io/arielcostas/infobus-bot:latest
+          image: ghcr.io/arielcostas/infobus-bot:main
           imagePullPolicy: Always
           env:
             - name: Token
@@ -31,4 +31,4 @@ metadata:
   name: infobus-bot-secret
 type: Opaque
 data:
-  Token: <base64-encoded-token>
+  Token: NjAzNzcxNTc5MjpBQUhNUWJiYkVFaU15bTliX0ZQRWhhdHZCSHYwWWtsbnVJbw==

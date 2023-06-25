@@ -13,15 +13,21 @@ namespace BotVitrasa;
 public class TelegramWorker : BackgroundService
 {
     private readonly string _token;
-    private readonly BuscarCommandHandler _bch = new();
     private readonly ILogger<TelegramWorker> _logger;
+    
+    private readonly BuscarCommandHandler _bch;
+    private readonly DefaultCommandHandler _dch;
+    private readonly InformationCommandHandler _ich;
+    private readonly ParadaCommandHandler _pch;
 
-    public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger)
+    public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger, BuscarCommandHandler bch, ParadaCommandHandler pch, InformationCommandHandler ich, DefaultCommandHandler dch)
     {
         _token = configuration["Token"] ?? string.Empty;
         _logger = logger;
-
-        Console.WriteLine(_token);
+        _bch = bch;
+        _pch = pch;
+        _ich = ich;
+        _dch = dch;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -73,10 +79,10 @@ public class TelegramWorker : BackgroundService
 
         ICommandHandler? handler = args[0][1..] switch
         {
-            "start" => new InformationCommandHandler(),
-            "help" => new InformationCommandHandler(),
-            "info" => new InformationCommandHandler(),
-            "parada" => new ParadaCommandHandler(),
+            "start" => _ich,
+            "help" => _ich,
+            "info" => _ich,
+            "parada" => _pch,
             "buscar" => _bch,
             _ => null
         };
@@ -85,11 +91,11 @@ public class TelegramWorker : BackgroundService
         {
             if (int.TryParse(messageText, out _))
             {
-                handler = new ParadaCommandHandler();
+                handler = _pch;
             }
             else
             {
-                handler = new DefaultCommandHandler();
+                handler = _dch;
             }
         }
 
