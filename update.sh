@@ -1,7 +1,9 @@
-﻿#!/usr/bin/env bash
+#!/bin/sh
 
 git pull
 
+sudo systemctl stop infobus-bot.service
+
 dotnet publish --output /opt/bot src/BotVitrasa.csproj --self-contained true -p Release
 
-systemctl restart infobus-bot.service
+sudo systemctl start infobus-bot.service
