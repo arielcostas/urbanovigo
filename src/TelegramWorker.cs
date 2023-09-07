@@ -14,13 +14,14 @@ public class TelegramWorker : BackgroundService
 {
     private readonly string _token;
     private readonly ILogger<TelegramWorker> _logger;
-    
+
     private readonly BuscarCommandHandler _bch;
     private readonly DefaultCommandHandler _dch;
     private readonly InformationCommandHandler _ich;
     private readonly ParadaCommandHandler _pch;
 
-    public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger, BuscarCommandHandler bch, ParadaCommandHandler pch, InformationCommandHandler ich, DefaultCommandHandler dch)
+    public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger, BuscarCommandHandler bch,
+        ParadaCommandHandler pch, InformationCommandHandler ich, DefaultCommandHandler dch)
     {
         _token = configuration["Token"] ?? string.Empty;
         _logger = logger;
@@ -99,7 +100,17 @@ public class TelegramWorker : BackgroundService
             }
         }
 
-        await handler.Handle(message, botClient);
+        try
+        {
+            await handler.Handle(message, botClient);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Excepción no controlada");
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, replyToMessageId: message.MessageId,
+                text: "Error inesperado en el sistema", parseMode: ParseMode.Html
+                , cancellationToken: cancellationToken);
+        }
     }
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,

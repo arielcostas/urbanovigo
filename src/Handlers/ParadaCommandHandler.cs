@@ -36,12 +36,19 @@ public sealed class ParadaCommandHandler : ICommandHandler
             );
         }
 
-        var id = args.Length switch
+        if (args.Length > 2)
         {
-            1 => args[0],
-            2 => args[1],
-            _ => throw new ArgumentOutOfRangeException(args.Length.ToString())
-        };
+            _logger.LogWarning(Events.BadMessage, "Se han especificado más de dos argumentos");
+            await client.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                replyToMessageId: message.MessageId,
+                text: "Debes especificar solo una parada",
+                parseMode: ParseMode.Html
+            );
+            return;
+        }
+
+        var id = args.Length == 2 ? args[1] : args[0];
 
         if (!int.TryParse(id, out _))
         {
@@ -97,7 +104,7 @@ public sealed class ParadaCommandHandler : ICommandHandler
     {
         var response = await _http.GetAsync($"/Default.aspx?parada={idParada}");
         var body = await response.Content.ReadAsStringAsync();
-        
+
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -106,7 +113,7 @@ public sealed class ParadaCommandHandler : ICommandHandler
             );
             return null;
         }
-        
+
         var doc = new HtmlDocument();
         doc.LoadHtml(body);
 
