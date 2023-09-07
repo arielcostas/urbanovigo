@@ -21,7 +21,7 @@ var httpClient = new HttpClient()
     BaseAddress = new Uri("http://infobus.vitrasa.es:8002")
 };
 
-builder.Services.AddSingleton(() => httpClient);
+builder.Services.AddSingleton(httpClient);
 
 builder.Services.AddSingleton<BuscarCommandHandler>();
 builder.Services.AddSingleton<DefaultCommandHandler>();

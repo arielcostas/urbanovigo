@@ -34,17 +34,6 @@ public sealed class ParadaCommandHandler : ICommandHandler
                 text: "Debes especificar solo una parada",
                 parseMode: ParseMode.Html
             );
-        }
-
-        if (args.Length > 2)
-        {
-            _logger.LogWarning(Events.BadMessage, "Se han especificado más de dos argumentos");
-            await client.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
-                text: "Debes especificar solo una parada",
-                parseMode: ParseMode.Html
-            );
             return;
         }
 
