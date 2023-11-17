@@ -1,5 +1,4 @@
-﻿using System.Net;
-using BotVitrasa.Handlers;
+﻿using BotVitrasa.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

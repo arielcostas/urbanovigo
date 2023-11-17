@@ -2,7 +2,7 @@
 
 namespace BotVitrasa;
 
-public class Events
+public static class Events
 {
     public static readonly EventId BotStarted = new(1, "Bot started");
     public static readonly EventId MessageReceived = new(2, "Message received");

@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Text;
 using BotVitrasa.Data;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
@@ -51,7 +50,7 @@ public sealed class ParadaCommandHandler : ICommandHandler
             return;
         }
 
-        var paradaSolicitada = await GetParada(id);
+        var paradaSolicitada = await LoadStopData(id);
 
         if (paradaSolicitada is null)
         {
@@ -67,15 +66,15 @@ public sealed class ParadaCommandHandler : ICommandHandler
 
         var sb = new StringBuilder();
 
-        sb.AppendLine($"<b>{paradaSolicitada.Nombre}</b> ({paradaSolicitada.Id})");
+        sb.AppendLine($"<b>{paradaSolicitada.Name}</b> ({paradaSolicitada.Id})");
 
         sb.AppendLine($"<pre>Min | Liña => Destino</pre>");
-        foreach (var paso in paradaSolicitada.Pasos)
+        foreach (var paso in paradaSolicitada.Arrivals)
         {
-            var minutosPadded = paso.Minutos.PadLeft(3, ' ');
-            var lineaPadded = paso.Linea.PadLeft(4, ' ');
+            var minutosPadded = paso.EstimatedMinutes.PadLeft(3, ' ');
+            var lineaPadded = paso.Line.PadLeft(4, ' ');
 
-            sb.AppendLine($"<pre>{minutosPadded} | {lineaPadded} => {paso.Destino}</pre>");
+            sb.AppendLine($"<pre>{minutosPadded} | {lineaPadded} => {paso.Headsign}</pre>");
         }
 
         await client.SendTextMessageAsync(
@@ -89,7 +88,7 @@ public sealed class ParadaCommandHandler : ICommandHandler
         );
     }
 
-    private async Task<Parada?> GetParada(string idParada)
+    private async Task<Stop?> LoadStopData(string idParada)
     {
         var response = await _http.GetAsync($"/Default.aspx?parada={idParada}");
         var body = await response.Content.ReadAsStringAsync();
@@ -107,25 +106,25 @@ public sealed class ParadaCommandHandler : ICommandHandler
         doc.LoadHtml(body);
 
         var nombre = doc.DocumentNode.SelectSingleNode("//*[@id=\"lblNombre\"]");
-        var pasos = GetProximosPasos(doc);
+        var pasos = GetNextArrivals(doc);
 
-        return new Parada(
+        return new Stop(
             idParada,
             nombre.InnerText,
             pasos.ToArray()
         );
     }
 
-    private static List<Paso> GetProximosPasos(HtmlDocument doc)
+    private static List<Arrival> GetNextArrivals(HtmlDocument doc)
     {
         var rows = doc.DocumentNode.SelectNodes("//*[@id=\"GridView1\"]/tr");
 
         if (rows is null)
         {
-            return new List<Paso>();
+            return new List<Arrival>();
         }
 
-        var pasos = new List<Paso>();
+        var arrivals = new List<Arrival>();
 
         var first = true;
         foreach (var row in rows)
@@ -147,9 +146,9 @@ public sealed class ParadaCommandHandler : ICommandHandler
             var destino = cells[1].InnerText;
             var minutos = cells[2].InnerText;
 
-            pasos.Add(new Paso(linea, destino, minutos));
+            arrivals.Add(new Arrival(linea, destino, minutos));
         }
 
-        return pasos;
+        return arrivals;
     }
 }

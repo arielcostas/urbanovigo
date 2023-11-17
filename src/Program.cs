@@ -14,7 +14,7 @@ if (builder.Environment.IsProduction())
     builder.Logging.AddSystemdConsole();
 }
 
-Console.WriteLine($"""Read token from environment: {Environment.GetEnvironmentVariable("Token")}""");
+Console.WriteLine($"Read token from environment: {Environment.GetEnvironmentVariable("Token")}");
 
 var httpClient = new HttpClient()
 {
