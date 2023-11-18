@@ -8,7 +8,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace BotVitrasa.Handlers;
+namespace Vigo360.InfobusBot.Handlers;
 
 public class BuscarCommandHandler : ICommandHandler
 {

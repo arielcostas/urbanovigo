@@ -1,32 +1,23 @@
 ﻿using System.Text;
-using BotVitrasa.Data;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using Vigo360.InfobusBot.Data;
 
-namespace BotVitrasa.Handlers;
+namespace Vigo360.InfobusBot.Handlers;
 
-public sealed class ParadaCommandHandler : ICommandHandler
+public sealed class ParadaCommandHandler(ILogger<ParadaCommandHandler> logger, HttpClient http) : ICommandHandler
 {
-    private readonly ILogger<ParadaCommandHandler> _logger;
-    private readonly HttpClient _http;
-
-    public ParadaCommandHandler(ILogger<ParadaCommandHandler> logger, HttpClient http)
-    {
-        _logger = logger;
-        _http = http;
-    }
-
     public async Task Handle(Message message, ITelegramBotClient client)
     {
         var args = message.Text!.Split(' ');
 
         if (args.Length > 2)
         {
-            _logger.LogWarning(Events.BadMessage, "Se han especificado más de dos argumentos");
+            logger.LogWarning(Events.BadMessage, "Se han especificado más de dos argumentos");
             await client.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 replyToMessageId: message.MessageId,
@@ -40,7 +31,7 @@ public sealed class ParadaCommandHandler : ICommandHandler
 
         if (!int.TryParse(id, out _))
         {
-            _logger.LogWarning(Events.BadMessage, "El id de la parada no es un número válido");
+            logger.LogWarning(Events.BadMessage, "El id de la parada no es un número válido");
             await client.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 replyToMessageId: message.MessageId,
@@ -54,7 +45,7 @@ public sealed class ParadaCommandHandler : ICommandHandler
 
         if (paradaSolicitada is null)
         {
-            _logger.LogWarning(Events.NotFound, "No se ha encontrado la parada o ningún paso próximo");
+            logger.LogWarning(Events.NotFound, "No se ha encontrado la parada o ningún paso próximo");
             await client.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 replyToMessageId: message.MessageId,
@@ -88,14 +79,14 @@ public sealed class ParadaCommandHandler : ICommandHandler
         );
     }
 
-    private async Task<Stop?> LoadStopData(string idParada)
+    private async Task<Stop?> LoadStopData(string stopId)
     {
-        var response = await _http.GetAsync($"/Default.aspx?parada={idParada}");
+        var response = await http.GetAsync($"/Default.aspx?parada={stopId}");
         var body = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError(
+            logger.LogError(
                 Events.BotError, "HttpError {Status}: {Body}",
                 response.StatusCode, body
             );
@@ -105,13 +96,13 @@ public sealed class ParadaCommandHandler : ICommandHandler
         var doc = new HtmlDocument();
         doc.LoadHtml(body);
 
-        var nombre = doc.DocumentNode.SelectSingleNode("//*[@id=\"lblNombre\"]");
-        var pasos = GetNextArrivals(doc);
+        var name = doc.DocumentNode.SelectSingleNode("//*[@id=\"lblNombre\"]");
+        var arrivals = GetNextArrivals(doc);
 
         return new Stop(
-            idParada,
-            nombre.InnerText,
-            pasos.ToArray()
+            stopId,
+            name.InnerText,
+            arrivals.ToArray()
         );
     }
 
@@ -126,15 +117,8 @@ public sealed class ParadaCommandHandler : ICommandHandler
 
         var arrivals = new List<Arrival>();
 
-        var first = true;
-        foreach (var row in rows)
+        foreach (var row in rows.Elements().Skip(1))
         {
-            if (first)
-            {
-                first = false;
-                continue;
-            }
-
             var cells = row.SelectNodes("td");
 
             if (cells is null || cells.Count != 3)
@@ -142,11 +126,11 @@ public sealed class ParadaCommandHandler : ICommandHandler
                 continue;
             }
 
-            var linea = cells[0].InnerText;
-            var destino = cells[1].InnerText;
-            var minutos = cells[2].InnerText;
+            var line = cells[0].InnerText;
+            var headsign = cells[1].InnerText;
+            var estimate = cells[2].InnerText;
 
-            arrivals.Add(new Arrival(linea, destino, minutos));
+            arrivals.Add(new Arrival(line, headsign, estimate));
         }
 
         return arrivals;

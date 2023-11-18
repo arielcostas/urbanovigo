@@ -1,4 +1,4 @@
-﻿namespace BotVitrasa.Data;
+﻿namespace Vigo360.InfobusBot.Data;
 
 internal record Stop(string Id, string Name, Arrival[] Arrivals);
 

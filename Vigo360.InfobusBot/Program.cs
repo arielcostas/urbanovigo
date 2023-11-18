@@ -1,13 +1,16 @@
-﻿using BotVitrasa;
-using BotVitrasa.Handlers;
+﻿using Vigo360.InfobusBot;
+using Vigo360.InfobusBot.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Configuration.AddEnvironmentVariables();
+builder.Configuration
+    .AddUserSecrets(typeof(Program).Assembly, optional: true)
+    .AddEnvironmentVariables();
 
 if (builder.Environment.IsProduction())
 {

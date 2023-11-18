@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace BotVitrasa.Handlers;
+namespace Vigo360.InfobusBot.Handlers;
 
 public class InformationCommandHandler : ICommandHandler
 {

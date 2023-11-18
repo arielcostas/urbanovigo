@@ -1,4 +1,4 @@
-﻿namespace BotVitrasa.Data;
+﻿namespace Vigo360.InfobusBot.Data;
 
 public class Cache<T> where T : class
 {

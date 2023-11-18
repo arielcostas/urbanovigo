@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace BotVitrasa;
+namespace Vigo360.InfobusBot;
 
 public static class Events
 {

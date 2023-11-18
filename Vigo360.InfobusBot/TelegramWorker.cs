@@ -1,4 +1,4 @@
-﻿using BotVitrasa.Handlers;
+﻿using Vigo360.InfobusBot.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -7,28 +7,13 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace BotVitrasa;
+namespace Vigo360.InfobusBot;
 
-public class TelegramWorker : BackgroundService
-{
-    private readonly string _token;
-    private readonly ILogger<TelegramWorker> _logger;
-
-    private readonly BuscarCommandHandler _bch;
-    private readonly DefaultCommandHandler _dch;
-    private readonly InformationCommandHandler _ich;
-    private readonly ParadaCommandHandler _pch;
-
-    public TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger, BuscarCommandHandler bch,
+public class TelegramWorker(IConfiguration configuration, ILogger<TelegramWorker> logger, BuscarCommandHandler bch,
         ParadaCommandHandler pch, InformationCommandHandler ich, DefaultCommandHandler dch)
-    {
-        _token = configuration["Token"] ?? string.Empty;
-        _logger = logger;
-        _bch = bch;
-        _pch = pch;
-        _ich = ich;
-        _dch = dch;
-    }
+    : BackgroundService
+{
+    private readonly string _token = configuration["Token"] ?? string.Empty;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -62,14 +47,14 @@ public class TelegramWorker : BackgroundService
 
         if (message.Location is not null)
         {
-            await _bch.Handle(message, botClient);
+            await bch.Handle(message, botClient);
             return;
         }
 
         if (message.Text is not { } messageText)
             return;
 
-        _logger.LogInformation(
+        logger.LogInformation(
             Events.MessageReceived,
             "{User}: {MessageText}",
             message.From?.Username, message.Text
@@ -79,11 +64,11 @@ public class TelegramWorker : BackgroundService
 
         ICommandHandler? handler = args[0][1..] switch
         {
-            "start" => _ich,
-            "help" => _ich,
-            "info" => _ich,
-            "parada" => _pch,
-            "buscar" => _bch,
+            "start" => ich,
+            "help" => ich,
+            "info" => ich,
+            "parada" => pch,
+            "buscar" => bch,
             _ => null
         };
 
@@ -91,11 +76,11 @@ public class TelegramWorker : BackgroundService
         {
             if (int.TryParse(messageText, out _))
             {
-                handler = _pch;
+                handler = pch;
             }
             else
             {
-                handler = _dch;
+                handler = dch;
             }
         }
 
@@ -105,7 +90,7 @@ public class TelegramWorker : BackgroundService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Excepción no controlada");
+            logger.LogError(e, "Excepción no controlada");
             await botClient.SendTextMessageAsync(chatId: message.Chat.Id, replyToMessageId: message.MessageId,
                 text: "Error inesperado en el sistema", parseMode: ParseMode.Html
                 , cancellationToken: cancellationToken);
@@ -115,7 +100,7 @@ public class TelegramWorker : BackgroundService
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "API error");
+        logger.LogError(exception, "API error");
 
         return Task.CompletedTask;
     }
