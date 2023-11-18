@@ -1,0 +1,23 @@
+﻿[Unit]
+Description=Infobus bot
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/bot
+User=changeme
+Type=simple
+Restart=on-failure
+RestartSec=15
+ExecStart=/opt/bot/Vigo360.InfobusBot
+
+ProtectDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=default.target
