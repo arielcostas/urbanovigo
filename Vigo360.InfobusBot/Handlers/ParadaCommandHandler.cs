@@ -117,7 +117,7 @@ public sealed class ParadaCommandHandler(ILogger<ParadaCommandHandler> logger, H
 
         var arrivals = new List<Arrival>();
 
-        foreach (var row in rows.Elements().Skip(1))
+        foreach (var row in rows)
         {
             var cells = row.SelectNodes("td");
 
