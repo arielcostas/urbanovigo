@@ -21,4 +21,6 @@ jobs:
         with:
           context: ./Vigo360.InfobusBot
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ghcr.io/${{ github.repository }}:latest

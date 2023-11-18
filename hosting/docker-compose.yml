@@ -1,0 +1,7 @@
+﻿version: '3.8'
+services:
+  infobus-bot:
+    image: ghcr.io/arielcostas/infobus-bot:latest
+    environment:
+      - INFOBUSBOT_Token=your_token_here
+    restart: unless-stopped

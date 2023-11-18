@@ -13,6 +13,9 @@ FROM build AS publish
 RUN dotnet publish "Vigo360.InfobusBot.csproj" -c Release -o /app/publish
 
 FROM base AS final
+LABEL org.opencontainers.image.source = "https://github.com/arielcostas/infobus-bot"
+LABEL org.opencontainers.image.authors = "Ariel Costas <ariel@costas.dev>"
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENV INFOBUSBOT_Token ""
