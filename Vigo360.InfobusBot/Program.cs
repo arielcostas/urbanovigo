@@ -9,8 +9,9 @@ using Microsoft.Extensions.Logging.ApplicationInsights;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true)
     .AddUserSecrets(typeof(Program).Assembly, optional: true)
-    .AddEnvironmentVariables();
+    .AddEnvironmentVariables("INFOBUSBOT_");
 
 if (builder.Environment.IsProduction())
 {
