@@ -19,4 +19,4 @@ LABEL org.opencontainers.image.authors = "Ariel Costas <ariel@costas.dev>"
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENV INFOBUSBOT_Token ""
-ENTRYPOINT ["dotnet", "BotVitrasa.dll"]
+ENTRYPOINT ["dotnet", "Vigo360.InfobusBot.dll"]
