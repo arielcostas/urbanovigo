@@ -1,28 +1,19 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using FuzzySharp;
+using Microsoft.Extensions.Caching.Memory;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using Vigo360.VitrApi.Fetcher;
+using Vigo360.VitrApi.Fetcher.Models;
 
-namespace Vigo360.InfobusBot.Handlers;
+namespace Vigo360.VitrApi.TelegramBot.Handlers;
 
-public class BuscarCommandHandler : ICommandHandler
+public class SearchStopsCommand(HttpClient http, IMemoryCache cache) : ICommand
 {
-    private readonly HttpClient _httpClient = new();
-    private readonly List<ParadaBus> _paradas;
-
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ParadaBus))]
-    public BuscarCommandHandler()
-    {
-        var rt = _httpClient.GetAsync("https://datos.vigo.org/data/transporte/paradas.json");
-        var content = rt.Result.Content.ReadAsStringAsync();
-        _paradas = JsonSerializer.Deserialize<List<ParadaBus>>(content.Result) ?? new List<ParadaBus>();
-    }
-
     public async Task Handle(Message message, ITelegramBotClient client)
     {
         var args = message.Text!.Split(' ')[1..];
@@ -40,9 +31,11 @@ public class BuscarCommandHandler : ICommandHandler
 
         var query = string.Join(' ', args);
 
-        var resultados = Process.ExtractTop(query, _paradas.Select(p => p.Nombre));
+        var stopsFetcher = new StopsFetcher(http, cache);
+        var stops = await stopsFetcher.FetchStopsAsync();
+        var searchResults = Process.ExtractTop(query, stops.Select(p => $"{p.Id} {p.Name}")).ToList();
 
-        if (resultados == null)
+        if (searchResults.Count == 0)
         {
             await client.SendTextMessageAsync(
                 chatId: message.Chat.Id,
@@ -53,15 +46,29 @@ public class BuscarCommandHandler : ICommandHandler
             return;
         }
 
-        var r = resultados.ToArray();
-
         StringBuilder sb = new();
         sb.AppendLine("Se han encontrado las siguientes paradas:");
 
-        foreach (var resultado in r)
+        DetailedStop? first = null;
+
+        foreach (var results in searchResults)
         {
-            var parada = _paradas.First(p => p.Nombre == resultado.Value);
-            sb.AppendLine($"<pre>{parada.Nombre} ({parada.Id})</pre>");
+            var idValue = int.Parse(results.Value.Split(' ')[0]);
+            var stop = stops.First(p => p.Id == idValue);
+            sb.AppendLine($"<pre>{stop.Name} ({stop.Id})</pre>");
+
+            first ??= stop;
+        }
+
+        if (first is null)
+        {
+            await client.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                replyToMessageId: message.MessageId,
+                text: "No se ha encontrado ninguna parada con ese nombre.",
+                parseMode: ParseMode.Html
+            );
+            return;
         }
 
         await client.SendTextMessageAsync(
@@ -70,22 +77,21 @@ public class BuscarCommandHandler : ICommandHandler
             text: sb.ToString(),
             parseMode: ParseMode.Html,
             replyMarkup: new ReplyKeyboardMarkup(
-                r.Select(resultado =>
+                searchResults.Select(result =>
                 {
-                    var parada = _paradas.First(p => p.Nombre == resultado.Value);
+                    var code = Convert.ToInt32(result.Value.Split(' ')[0]);
+                    var parada = stops.First(p => p.Id == code);
                     return new KeyboardButton($"/parada {parada.Id}");
                 })
             )
-            
         );
 
-        var p0 = _paradas.First(p => p.Nombre == r[0].Value);
         await client.SendVenueAsync(
             chatId: message.Chat.Id,
-            latitude: p0.Latitud,
-            longitude: p0.Longitud,
-            title: p0.Nombre,
-            address: p0.Nombre
+            latitude: first.Latitude,
+            longitude: first.Longitude,
+            title: first.Name,
+            address: first.Name
         );
     }
 }

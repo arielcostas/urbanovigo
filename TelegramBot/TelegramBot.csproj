@@ -5,23 +5,26 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>Vigo360.VitrApi.TelegramBot</RootNamespace>
+
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <RootNamespace>Vigo360.InfobusBot</RootNamespace>
+        <RootNamespace>Vigo360.VitrApi.TelegramBot</RootNamespace>
         <UserSecretsId>2448f941-3ec2-461f-9139-0eb2948dec6b</UserSecretsId>
     </PropertyGroup>
     
     <ItemGroup Label="Hosting dependencies">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3" />
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.0" />
+        
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
 
         <PackageReference Include="FuzzySharp" Version="2.0.2"/>
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.54"/>
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.60"/>
         <PackageReference Include="Telegram.Bot" Version="19.0.0"/>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Extractors\" />
+        
+        <ProjectReference Include="..\Fetcher\Fetcher.csproj" />
     </ItemGroup>
 </Project>

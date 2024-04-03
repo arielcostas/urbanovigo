@@ -1,9 +1,9 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Vigo360.InfobusBot.Handlers;
+namespace Vigo360.VitrApi.TelegramBot.Handlers;
 
-public interface ICommandHandler
+public interface ICommand
 {
     Task Handle(Message message, ITelegramBotClient client);
 }

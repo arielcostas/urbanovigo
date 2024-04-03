@@ -5,11 +5,15 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using Vigo360.InfobusBot.Data;
+using Vigo360.VitrApi.Fetcher;
+using Vigo360.VitrApi.Fetcher.Models;
+using Vigo360.VitrApi.TelegramBot.Data;
+using Vigo360.VitrApi.TelegramBot.Data.Models;
+using Vigo360.VitrApi.TelegramBot;
 
-namespace Vigo360.InfobusBot.Handlers;
+namespace Vigo360.VitrApi.TelegramBot.Handlers;
 
-public sealed class ParadaCommandHandler(ILogger<ParadaCommandHandler> logger, HttpClient http) : ICommandHandler
+public sealed class FindStopCommand(ILogger<FindStopCommand> logger, HttpClient http) : ICommand
 {
     public async Task Handle(Message message, ITelegramBotClient client)
     {
@@ -41,7 +45,8 @@ public sealed class ParadaCommandHandler(ILogger<ParadaCommandHandler> logger, H
             return;
         }
 
-        var paradaSolicitada = await LoadStopData(id);
+        var fetcher = new ArrivalFetcher(http);
+        var paradaSolicitada = await fetcher.FetchArrivalsAsync(id);
 
         if (paradaSolicitada is null)
         {
@@ -67,72 +72,16 @@ public sealed class ParadaCommandHandler(ILogger<ParadaCommandHandler> logger, H
 
             sb.AppendLine($"<pre>{minutosPadded} | {lineaPadded} => {paso.Headsign}</pre>");
         }
-
+        
         await client.SendTextMessageAsync(
             chatId: message.Chat.Id,
             replyToMessageId: message.MessageId,
             text: sb.ToString(),
             parseMode: ParseMode.Html,
             replyMarkup: new ReplyKeyboardMarkup(
-                new KeyboardButton("/parada " + paradaSolicitada.Id)
+                new KeyboardButton(paradaSolicitada.Id)
             )
         );
     }
 
-    private async Task<Stop?> LoadStopData(string stopId)
-    {
-        var response = await http.GetAsync($"/Default.aspx?parada={stopId}");
-        var body = await response.Content.ReadAsStringAsync();
-
-        if (!response.IsSuccessStatusCode)
-        {
-            logger.LogError(
-                Events.BotError, "HttpError {Status}: {Body}",
-                response.StatusCode, body
-            );
-            return null;
-        }
-
-        var doc = new HtmlDocument();
-        doc.LoadHtml(body);
-
-        var name = doc.DocumentNode.SelectSingleNode("//*[@id=\"lblNombre\"]");
-        var arrivals = GetNextArrivals(doc);
-
-        return new Stop(
-            stopId,
-            name.InnerText,
-            arrivals.ToArray()
-        );
-    }
-
-    private static List<Arrival> GetNextArrivals(HtmlDocument doc)
-    {
-        var rows = doc.DocumentNode.SelectNodes("//*[@id=\"GridView1\"]/tr");
-
-        if (rows is null)
-        {
-            return new List<Arrival>();
-        }
-
-        var arrivals = new List<Arrival>();
-
-        foreach (var row in rows)
-        {
-            var cells = row.SelectNodes("td");
-
-            if (cells is null || cells.Count != 3)
-            {
-                continue;
-            }
-
-            var line = cells[0].InnerText;
-            var headsign = cells[1].InnerText;
-            var estimate = cells[2].InnerText;
-
-            arrivals.Add(new Arrival(line, headsign, estimate));
-        }
-
-        return arrivals;
-    }
 }

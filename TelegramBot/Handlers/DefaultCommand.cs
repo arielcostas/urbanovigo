@@ -2,9 +2,9 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Vigo360.InfobusBot.Handlers;
+namespace Vigo360.VitrApi.TelegramBot.Handlers;
 
-public class DefaultCommandHandler : ICommandHandler
+public class DefaultCommand : ICommand
 {
     public async Task Handle(Message message, ITelegramBotClient client)
     {
