@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vigo360.VitrApi.TelegramBot;
 using Vigo360.VitrApi.TelegramBot;
@@ -12,18 +11,16 @@ using Vigo360.VitrApi.TelegramBot;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240403182338_Initial")]
-    partial class Initial
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Vigo360.TelegramBot.Data.Models.Announcement", b =>
+            modelBuilder.Entity("Vigo360.InfobusBot.Data.Models.Announcement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +50,7 @@ namespace Data.Migrations
                     b.ToTable("Announcements");
                 });
 
-            modelBuilder.Entity("Vigo360.TelegramBot.Data.Models.Subscriber", b =>
+            modelBuilder.Entity("Vigo360.InfobusBot.Data.Models.Subscriber", b =>
                 {
                     b.Property<string>("ChatId")
                         .HasMaxLength(32)
