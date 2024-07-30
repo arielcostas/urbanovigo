@@ -15,10 +15,10 @@ namespace Costasdev.VigoTransitApi
         internal async Task<T?> GetData<T>(string tipo) where T : class
         {
             var queryParams = new Dictionary<string, string> { { "tipo", tipo } };
-            return await GetDataParams<T>(queryParams);
+            return await GetDataWithParams<T>(queryParams);
         }
         
-        internal async Task<T?> GetDataParams<T>(IDictionary<string, string> parameters) where T : class
+        internal async Task<T?> GetDataWithParams<T>(IDictionary<string, string> parameters) where T : class
         {
             var queryString = MapToQueryString(parameters);
             var response = await _httpClient.GetAsync($"{BaseUrl}?{queryString}");

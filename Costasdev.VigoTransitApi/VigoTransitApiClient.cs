@@ -46,7 +46,7 @@ namespace Costasdev.VigoTransitApi
         /// <remarks>The contact points are retrieved via TRANSPORTE_CONTACTO but we return only the fields for the language requested</remarks>
         public async Task<List<ContactPoint>> GetContactInformation(Languages language)
         {
-            var rawInfo = await _dataSource.GetData<List<InternalTypes.Contacto>>("TRANSPORTE_CONTACTO") ?? [];
+            var rawInfo = await _dataSource.GetData<List<Contacto>>("TRANSPORTE_CONTACTO") ?? [];
             return rawInfo.Select(x =>
             {
                 var name = language switch
@@ -66,6 +66,25 @@ namespace Costasdev.VigoTransitApi
 
                 return new ContactPoint(x.Id, x.Telefono, name, description);
             }).ToList();
+        }
+
+        /// <summary>
+        /// Get the day type for the transportation service
+        /// </summary>
+        /// <returns>The day type for the transportation service today</returns>
+        /// <exception cref="InvalidOperationException">Thrown when no day types are found</exception>
+        /// <exception cref="NotImplementedException">The day type is not implemented. This method is WIP</exception>
+        public async Task<DayType> GetDayType()
+        {
+            var tiposDias = await _dataSource.GetData<List<TipoDia>>("TRANSPORTE_TIPO_DIA");
+            if (tiposDias == null || !tiposDias.Any())
+                throw new InvalidOperationException("No day types were found");
+
+            return tiposDias.First().Tipo switch
+            {
+                "L" => DayType.Weekday,
+                _ => throw new NotImplementedException()
+            };
         }
 
         /// <summary>
@@ -110,7 +129,45 @@ namespace Costasdev.VigoTransitApi
                 );
             }).ToList();
         }
-        
-        
+
+        /// <summary>
+        /// Gets the next arrivals for a stop by its ID
+        /// </summary>
+        /// <param name="stopId">The ID of the stop to get the estimates for</param>
+        /// <returns>The stop information and the estimates for the stop</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the stop ID is less than or equal to 0</exception>
+        /// <exception cref="InvalidOperationException">Thrown when no stop information is found</exception>
+        public async Task<StopEstimateResponse> GetStopEstimates(int stopId)
+        {
+            if (stopId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(stopId), "The stop ID must be greater than 0");
+            
+            var queryParams = new Dictionary<string, string>
+            {
+                { "tipo", "TRANSPORTE-ESTIMACION-PARADA" },
+                { "id", stopId.ToString() },
+                { "ttl", "1" }
+            };
+
+            var rawInfo = await _dataSource.GetDataWithParams<EstimacionesParadaResponse>(queryParams);
+
+            var stop = rawInfo?.Parada.FirstOrDefault();
+            
+            if (stop is null)
+                throw new InvalidOperationException("No stop information was found. The stop ID may not exist");
+            
+            return new StopEstimateResponse()
+            {
+                Stop = new StopEstimateResponse.StopInfo
+                {
+                    Name = stop.Nombre,
+                    Id = stop.Id,
+                    Latitude = stop.Latitud,
+                    Longitude = stop.Longitud
+                },
+                Estimates = rawInfo?.Estimaciones.Select(x => new StopEstimate(x.Linea, x.Ruta, x.Minutos, x.Metros))
+                    .ToList() ?? []
+            };
+        }
     }
 }
