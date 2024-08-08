@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 
 namespace Costasdev.VigoTransitApi
 {
@@ -24,9 +25,12 @@ namespace Costasdev.VigoTransitApi
             var response = await _httpClient.GetAsync($"{BaseUrl}?{queryString}");
 
             if (!response.IsSuccessStatusCode) return null;
+
+            var rawContent = await response.Content.ReadAsByteArrayAsync();
+            var content = Encoding.GetEncoding("ISO-8859-1").GetString(rawContent);
+            var contentStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
             
-            var content = await response.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<T>(content);
+            return await JsonSerializer.DeserializeAsync<T>(contentStream);
         }
         
         private string MapToQueryString(IDictionary<string, string> parameters)

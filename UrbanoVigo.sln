@@ -2,9 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfobusBot", "src\InfobusBot\InfobusBot.csproj", "{8CF8E4C4-4B7E-41C4-B27B-B180A71AAE7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fetcher", "src\Fetcher\Fetcher.csproj", "{4616982A-2781-4818-B508-82042120A4C1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Costasdev.VigoTransitApi", "Costasdev.VigoTransitApi\Costasdev.VigoTransitApi.csproj", "{6A13F294-720E-4CD6-A052-2F26ACF2B886}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Costasdev.VigoTransitApi", "src\Costasdev.VigoTransitApi\Costasdev.VigoTransitApi.csproj", "{6A13F294-720E-4CD6-A052-2F26ACF2B886}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,10 +14,6 @@ Global
 		{8CF8E4C4-4B7E-41C4-B27B-B180A71AAE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CF8E4C4-4B7E-41C4-B27B-B180A71AAE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CF8E4C4-4B7E-41C4-B27B-B180A71AAE7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4616982A-2781-4818-B508-82042120A4C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4616982A-2781-4818-B508-82042120A4C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4616982A-2781-4818-B508-82042120A4C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4616982A-2781-4818-B508-82042120A4C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6A13F294-720E-4CD6-A052-2F26ACF2B886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A13F294-720E-4CD6-A052-2F26ACF2B886}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A13F294-720E-4CD6-A052-2F26ACF2B886}.Release|Any CPU.ActiveCfg = Release|Any CPU

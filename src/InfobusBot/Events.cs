@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Vigo360.VitrApi.TelegramBot;
+namespace Costasdev.VigoTransitTelegramBot;
 
 public static class Events
 {

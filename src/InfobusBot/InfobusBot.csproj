@@ -5,26 +5,21 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Vigo360.VitrApi.TelegramBot</RootNamespace>
+        <RootNamespace>Costasdev.VigoTransitTelegramBot</RootNamespace>
 
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <RootNamespace>Vigo360.VitrApi.TelegramBot</RootNamespace>
         <UserSecretsId>2448f941-3ec2-461f-9139-0eb2948dec6b</UserSecretsId>
     </PropertyGroup>
     
-    <ItemGroup Label="Hosting dependencies">
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3" />
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.0" />
-        
+    <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
 
         <PackageReference Include="FuzzySharp" Version="2.0.2"/>
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.60"/>
         <PackageReference Include="Telegram.Bot" Version="19.0.0"/>
         
-        <ProjectReference Include="..\Fetcher\Fetcher.csproj" />
+        <ProjectReference Include="..\Costasdev.VigoTransitApi\Costasdev.VigoTransitApi.csproj" />
     </ItemGroup>
 </Project>

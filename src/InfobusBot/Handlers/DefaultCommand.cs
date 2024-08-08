@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Vigo360.VitrApi.TelegramBot.Handlers;
+namespace Costasdev.VigoTransitTelegramBot.Handlers;
 
 public class DefaultCommand : ICommand
 {

@@ -1,16 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Costasdev.VigoTransitTelegramBot.Handlers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Vigo360.VitrApi.TelegramBot.Handlers;
-using Vigo360.VitrApi.TelegramBot.Handlers;
 
 // ReSharper disable SuggestBaseTypeForParameterInConstructor Because they are injected by DI
 
-namespace Vigo360.VitrApi.TelegramBot;
+namespace Costasdev.VigoTransitTelegramBot;
 
 public class TelegramWorker(
     IConfiguration configuration,
@@ -18,9 +17,7 @@ public class TelegramWorker(
     SearchStopsCommand bch,
     FindStopCommand pch,
     InformationCommand ich,
-    DefaultCommand dch,
-    SubscribeToAnnouncementsCommand sach,
-    UnsubscribeFromAnnouncementsCommand uach
+    DefaultCommand dch
 )
     : BackgroundService
 {
@@ -80,8 +77,6 @@ public class TelegramWorker(
             "info" => ich,
             "parada" => pch,
             "buscar" => bch,
-            "suscribir" => sach,
-            "desuscribir" => uach,
             _ => null
         };
 

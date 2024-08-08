@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Vigo360.VitrApi.TelegramBot.Handlers;
+namespace Costasdev.VigoTransitTelegramBot.Handlers;
 
 public interface ICommand
 {

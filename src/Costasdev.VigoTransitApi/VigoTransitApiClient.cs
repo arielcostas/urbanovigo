@@ -2,6 +2,7 @@
 using Costasdev.VigoTransitApi.InternalTypes;
 using Costasdev.VigoTransitApi.Types;
 
+// ReSharper disable UnusedMember.Global
 namespace Costasdev.VigoTransitApi
 {
     public class VigoTransitApiClient
@@ -123,7 +124,12 @@ namespace Costasdev.VigoTransitApi
                     x.Linea,
                     x.Color ?? "#000000",
                     type,
-                    x.Subtipo,
+                    language switch
+                    {
+                        Languages.Es => x.SubtipoEs,
+                        Languages.Gl => x.SubtipoGl,
+                        _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
+                    },
                     x.Descripcion,
                     new Uri($"{LineService.ImageBaseUri}{x.Imagen}")
                 );
@@ -141,7 +147,7 @@ namespace Costasdev.VigoTransitApi
         {
             if (stopId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(stopId), "The stop ID must be greater than 0");
-            
+
             var queryParams = new Dictionary<string, string>
             {
                 { "tipo", "TRANSPORTE-ESTIMACION-PARADA" },
@@ -152,10 +158,10 @@ namespace Costasdev.VigoTransitApi
             var rawInfo = await _dataSource.GetDataWithParams<EstimacionesParadaResponse>(queryParams);
 
             var stop = rawInfo?.Parada.FirstOrDefault();
-            
+
             if (stop is null)
                 throw new InvalidOperationException("No stop information was found. The stop ID may not exist");
-            
+
             return new StopEstimateResponse()
             {
                 Stop = new StopEstimateResponse.StopInfo
@@ -168,6 +174,61 @@ namespace Costasdev.VigoTransitApi
                 Estimates = rawInfo?.Estimaciones.Select(x => new StopEstimate(x.Linea, x.Ruta, x.Minutos, x.Metros))
                     .ToList() ?? []
             };
+        }
+
+        /// <summary>
+        /// Gets the ATMs that support charging the transportation card
+        /// </summary>
+        /// <returns>A list of ATMs that support charging the transportation card</returns>
+        public async Task<List<Atm>> GetAtms()
+        {
+            var rawData = await _dataSource.GetData<List<Cajero>>("TRANSPORTE_CAJEROS") ?? [];
+
+            return rawData.Select(x => new Atm(x.Id, x.Name, x.Descripcion, x.CodigoPostal, x.Poblacion, x.Provincia,
+                x.Latitude, x.Longitude)).ToList();
+        }
+
+        /// <summary>
+        /// Gets the stop by its ID
+        /// </summary>
+        /// <param name="id">The ID of the stop to get</param>
+        /// <returns>The stop information</returns>
+        public async Task<Stop> GetStopById(int id)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                { "tipo", "TRANSPORTE_PARADA_ID" },
+                { "id", id.ToString() }
+            };
+            var res = await _dataSource.GetDataWithParams<List<Parada>>(dict);
+            if (res == null || !res.Any())
+                throw new InvalidOperationException("No stop information was found. The stop ID may not exist");
+
+            return res.Select(p => new Stop()
+            {
+                InternalStopId = p.StopId,
+                StopId = p.Id,
+                Name = p.Nombre,
+                Latitude = p.Lat,
+                Longitude = p.Lon
+            }).First();
+        }
+
+        public async Task<List<Stop>> GetStops()
+        {
+            var res = await _dataSource.GetData<List<Parada>>("TRANSPORTE_PARADAS");
+            if (res == null || !res.Any())
+                throw new InvalidOperationException("No stop information was found");
+
+            return res.Select(p => new Stop()
+            {
+                InternalStopId = p.StopId,
+                StopId = p.Id,
+                Name = p.Nombre,
+                Latitude = p.Lat,
+                Longitude = p.Lon,
+                Lines = p.Lineas?.Split(',').Select(s => s.Trim()).ToList()
+            }).ToList();
         }
     }
 }
