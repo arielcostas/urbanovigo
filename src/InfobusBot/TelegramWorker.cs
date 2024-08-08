@@ -28,10 +28,10 @@ public class TelegramWorker(
         TelegramBotClient client = new(_token);
         ReceiverOptions receiverOptions = new()
         {
-            AllowedUpdates = new[]
-            {
+            AllowedUpdates =
+            [
                 UpdateType.Message
-            },
+            ],
             ThrowPendingUpdates = true
         };
 
@@ -109,6 +109,7 @@ public class TelegramWorker(
         CancellationToken cancellationToken)
     {
         logger.LogError(exception, "API error");
+        StopAsync(cancellationToken); // Stop the worker
 
         return Task.CompletedTask;
     }
