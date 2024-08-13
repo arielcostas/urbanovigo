@@ -47,7 +47,7 @@ public sealed class FindStopCommand(ILogger<FindStopCommand> logger, VigoTransit
         {
             requestedStop = await apiClient.GetStopEstimates(stopIdNumber);
         }
-        catch (Exception e)
+        catch (ArgumentOutOfRangeException e)
         {
             logger.LogError(Events.NotFound, e, "Error al obtener los datos de la parada");
             await client.SendTextMessageAsync(

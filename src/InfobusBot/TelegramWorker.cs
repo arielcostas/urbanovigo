@@ -108,8 +108,10 @@ public class TelegramWorker(
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "API error");
+        logger.LogError(exception, "API error:");
         StopAsync(cancellationToken); // Stop the worker
+        
+        Environment.Exit(1); // Exit the application
 
         return Task.CompletedTask;
     }
