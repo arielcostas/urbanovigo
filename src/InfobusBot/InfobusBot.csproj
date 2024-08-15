@@ -9,6 +9,8 @@
 
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>2448f941-3ec2-461f-9139-0eb2948dec6b</UserSecretsId>
+        
+        <NoWarn>1591</NoWarn>
     </PropertyGroup>
     
     <ItemGroup>

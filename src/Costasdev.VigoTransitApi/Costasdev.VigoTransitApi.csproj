@@ -25,7 +25,15 @@
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-        <PackageReference Include="System.Text.Json" Version="8.0.4" />
-        <PackageReference Include="System.Net.Http" Version="4.3.4" />
+        <PackageReference Include="System.Text.Json" Version="8.0.4"/>
+        <PackageReference Include="System.Net.Http" Version="4.3.4"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Include the WRAPPER-README.md file in the package but rename it to README.md -->
+        <None Include="..\..\WRAPPER-README.md">
+            <Pack>True</Pack>
+            <PackagePath>README.md</PackagePath>
+        </None>
     </ItemGroup>
 </Project>

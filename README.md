@@ -1,4 +1,12 @@
-﻿# Infobus Bot (Telegram)
+﻿# UrbanoVigo
+
+## Wrapper en C# de la API del Concello
+
+Se trata de un wrapper en C# de la API de datos del Concello de Vigo, usada principalmente por
+sus apps oficiales. Esta API proporciona información sobre el transporte urbano de Vigo, entre otros,
+sin depender de hacer scraping a la web de Vitrasa.
+
+## Bot de Telegram
 
 Un bot de Telegram que permite consultar el tiempo de espera de los autobuses de Vitrasa en Vigo.
 
@@ -6,34 +14,22 @@ Bot actualmente operativo en la cuenta [`@infobus_vigo_bot`](https://t.me/infobu
 
 <img src="qr.jpg" alt="QR" width="120" />
 
-## ¿Por qué?
+### ¿Por qué?
 
 1. Moovit no tiene apoyo oficial por parte de la empresa ni el Concello. Y tiene anuncios muy molestos (que hay que
    pagar por quitar).
 2. Acordarse de los códigos de parada y entrar a Infobus[^1] por URL es un rollazo.
 3. Vitrasa no da una API oficial que haría esto mucho más fácil e interoperable.
 
-## Cómo funciona
+### Cómo funciona
 
-El bot está programado en .NET 8 con C#, utilizando HtmlAgilityPack para extraer los datos,
-y [Telegram.Bot](https://www.nuget.org/packages/Telegram.Bot/19.0.0) para interactuar con la API de Telegram.
+El bot está programado en .NET 8 con C#, utilizando [Telegram.Bot](https://www.nuget.org/packages/Telegram.Bot/19.0.0) para interactuar con la API de Telegram.
 
-- Para consultar el tiempo de espera de los autobuses de Vitrasa el bot hace una petición a Infobus, escanea el HTML y
-  devuelve los resultados en texto por mensaje de Telegram.
+- Para consultar el tiempo de espera de los autobuses de Vitrasa el bot consulta la API del Concello de Vigo y
+  devuelve los datos en un mensaje de texto por Telegram. 
 - Para buscar paradas por nombre el bot utiliza el dataset JSON del Concello de Vigo[^2] con las paradas de Vitrasa.
   Además, se utiliza [FuzzySharp](https://www.nuget.org/packages/FuzzySharp/2.0.2) para permitir mayor flexibilidad a
   las búsquedas.
-
-## Funcionalidades
-
-- [X] Consultar el tiempo estimado de llegada de los autobuses de Vitrasa en una parada concreta.
-- [X] Buscar paradas por nombre.
-- [ ] Buscar paradas por ubicación.
-- [ ] Interfaz con botones para facilitar la interacción con el bot.
-- [ ] Aviso cuando se publiquen anuncios en [vitrasa.es](https://vitrasa.es).
-- [ ] Hacer un logo en condiciones, y quizás otro nombre.
-- [ ] Hacer una "caché" de las estimaciones para no hacer más de 1 petición por parada/minuto.
-- [ ] Soporte para otras plataformas de mensajería.
 
 ## Licencia
 
