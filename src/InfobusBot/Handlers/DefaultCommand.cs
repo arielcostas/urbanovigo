@@ -8,9 +8,9 @@ public class DefaultCommand : ICommand
 {
     public async Task Handle(Message message, ITelegramBotClient client)
     {
-        await client.SendTextMessageAsync(
+        await client.SendMessage(
             chatId: message.Chat.Id,
-            replyToMessageId: message.MessageId,
+            replyParameters: message.MessageId,
             text: "Comando no reconocido.",
             parseMode: ParseMode.Html
         );

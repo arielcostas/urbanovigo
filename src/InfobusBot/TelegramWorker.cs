@@ -32,17 +32,17 @@ public class TelegramWorker(
             [
                 UpdateType.Message
             ],
-            ThrowPendingUpdates = true
+            DropPendingUpdates = true
         };
 
         client.StartReceiving(
             updateHandler: HandleUpdateAsync,
-            pollingErrorHandler: HandlePollingErrorAsync,
+            errorHandler: HandlePollingErrorAsync,
             receiverOptions: receiverOptions,
             cancellationToken: cancellationToken
         );
 
-        var me = await client.GetMeAsync(cancellationToken: cancellationToken);
+        var me = await client.GetMe(cancellationToken: cancellationToken);
 
         Console.WriteLine($"Listening for @{me.Username}");
     }
@@ -99,7 +99,9 @@ public class TelegramWorker(
         catch (Exception e)
         {
             logger.LogError(e, "Excepción no controlada");
-            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, replyToMessageId: message.MessageId,
+            await botClient.SendMessage(
+                chatId: new ChatId(message.Chat.Id),
+                replyParameters: new ReplyParameters() { MessageId = message.MessageId },
                 text: "Error inesperado en el sistema", parseMode: ParseMode.Html
                 , cancellationToken: cancellationToken);
         }
@@ -110,7 +112,7 @@ public class TelegramWorker(
     {
         logger.LogError(exception, "API error:");
         StopAsync(cancellationToken); // Stop the worker
-        
+
         Environment.Exit(1); // Exit the application
 
         return Task.CompletedTask;

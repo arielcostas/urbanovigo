@@ -19,9 +19,9 @@ public class SearchStopsCommand(VigoTransitApiClient apiClient, IMemoryCache cac
 
         if (args.Length == 0)
         {
-            await client.SendTextMessageAsync(
+            await client.SendMessage(
                 chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
+                replyParameters: message.MessageId,
                 text: "No se ha especificado ningún término de búsqueda.",
                 parseMode: ParseMode.Html
             );
@@ -39,9 +39,9 @@ public class SearchStopsCommand(VigoTransitApiClient apiClient, IMemoryCache cac
 
         if (searchResults.Count == 0)
         {
-            await client.SendTextMessageAsync(
+            await client.SendMessage(
                 chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
+                replyParameters: message.MessageId,
                 text: "No se ha encontrado ninguna parada con ese nombre.",
                 parseMode: ParseMode.Html
             );
@@ -64,18 +64,18 @@ public class SearchStopsCommand(VigoTransitApiClient apiClient, IMemoryCache cac
 
         if (first is null)
         {
-            await client.SendTextMessageAsync(
+            await client.SendMessage(
                 chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
+                replyParameters: message.MessageId,
                 text: "No se ha encontrado ninguna parada con ese nombre.",
                 parseMode: ParseMode.Html
             );
             return;
         }
 
-        await client.SendTextMessageAsync(
+        await client.SendMessage(
             chatId: message.Chat.Id,
-            replyToMessageId: message.MessageId,
+            replyParameters: message.MessageId,
             text: sb.ToString(),
             parseMode: ParseMode.Html,
             replyMarkup: new ReplyKeyboardMarkup(
@@ -88,7 +88,7 @@ public class SearchStopsCommand(VigoTransitApiClient apiClient, IMemoryCache cac
             )
         );
 
-        await client.SendVenueAsync(
+        await client.SendVenue(
             chatId: message.Chat.Id,
             latitude: (double)first.Latitude,
             longitude: (double)first.Longitude,

@@ -18,9 +18,9 @@ public sealed class FindStopCommand(ILogger<FindStopCommand> logger, VigoTransit
         if (args.Length > 2)
         {
             logger.LogWarning(Events.BadMessage, "Se han especificado más de dos argumentos");
-            await client.SendTextMessageAsync(
+            await client.SendMessage(
                 chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
+                replyParameters: message.MessageId,
                 text: "Debes especificar solo una parada",
                 parseMode: ParseMode.Html
             );
@@ -32,9 +32,9 @@ public sealed class FindStopCommand(ILogger<FindStopCommand> logger, VigoTransit
         if (!int.TryParse(stopIdString, out var stopIdNumber))
         {
             logger.LogWarning(Events.BadMessage, "El id de la parada no es un número válido");
-            await client.SendTextMessageAsync(
+            await client.SendMessage(
                 chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
+                replyParameters: message.MessageId,
                 text: "El id de la parada debe ser un número válido",
                 parseMode: ParseMode.Html
             );
@@ -50,9 +50,9 @@ public sealed class FindStopCommand(ILogger<FindStopCommand> logger, VigoTransit
         catch (ArgumentOutOfRangeException e)
         {
             logger.LogError(Events.NotFound, e, "Error al obtener los datos de la parada");
-            await client.SendTextMessageAsync(
+            await client.SendMessage(
                 chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
+                replyParameters: message.MessageId,
                 text: "Error al obtener los datos de la parada",
                 parseMode: ParseMode.Html
             );
@@ -73,9 +73,9 @@ public sealed class FindStopCommand(ILogger<FindStopCommand> logger, VigoTransit
             sb.AppendLine($"<pre> {paddedMinutes} ({paddedMeters}) | {paddedLineNumber} => {estimate.Route}</pre>");
         }
 
-        await client.SendTextMessageAsync(
+        await client.SendMessage(
             chatId: message.Chat.Id,
-            replyToMessageId: message.MessageId,
+            replyParameters: message.MessageId,
             text: sb.ToString(),
             parseMode: ParseMode.Html,
             replyMarkup: new ReplyKeyboardMarkup(
