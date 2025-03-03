@@ -162,7 +162,7 @@ namespace Costasdev.VigoTransitApi
             if (stop is null)
                 throw new InvalidOperationException("No stop information was found. The stop ID may not exist");
 
-            return new StopEstimateResponse()
+            return new StopEstimateResponse
             {
                 Stop = new StopEstimateResponse.StopInfo
                 {
